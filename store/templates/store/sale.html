@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <title>ფასდაკლებები</title>
+</head>
+<body>
+
+    <h1>ფასდაკლებული პროდუქტები</h1>
+
+    <ul>
+        {% for product in products %}
+            <li>
+                <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+                - {{ product.price }} ₾
+                <strong style="color: red;">SALE</strong>
+            </li>
+        {% empty %}
+            <li>ფასდაკლებული პროდუქტები ჯერ არ არის.</li>
+        {% endfor %}
+    </ul>
+
+    <p><a href="{% url 'home' %}">← უკან მთავარ გვერდზე</a></p>
+
+</body>
+</html>

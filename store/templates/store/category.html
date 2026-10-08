@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ category.name }}</title>
+</head>
+<body>
+
+    <h1>კატეგორია: {{ category.name }}</h1>
+
+    <ul>
+        {% for product in products %}
+            <li>
+                <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+                - {{ product.price }} ₾
+                {% if product.is_on_sale %}
+                    <strong style="color: red;">SALE</strong>
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>ამ კატეგორიაში პროდუქტები არ არის.</li>
+        {% endfor %}
+    </ul>
+
+    <p><a href="{% url 'home' %}">← უკან მთავარ გვერდზე</a></p>
+
+</body>
+</html>
