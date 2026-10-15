@@ -1,28 +1,56 @@
-<!DOCTYPE html>
-<html lang="ka">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ product.name }}</title>
-</head>
-<body>
+{% extends 'store/base.html' %}
+{% load static %}
 
-    <h1>
-        {{ product.name }}
-        {% if product.is_on_sale %}
-            <strong style="color: red;">SALE</strong>
-        {% endif %}
-    </h1>
+{% block title %}{{ product.name }} - Electro{% endblock %}
 
-    <p>
-        კატეგორია:
-        <a href="{% url 'category_detail' product.category.id %}">{{ product.category.name }}</a>
-    </p>
+{% block content %}
 
-    <p><strong>ფასი: {{ product.price }} ₾</strong></p>
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">{{ product.name }}</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item active text-white">{{ product.name }}</li>
+    </ol>
+</div>
 
-    <p>{{ product.description }}</p>
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row g-5">
 
-    <p><a href="{% url 'home' %}">← უკან მთავარ გვერდზე</a></p>
+            <div class="col-lg-5">
+                <div class="border rounded">
+                    <img src="{% static 'store/img/product-3.png' %}" class="img-fluid w-100 rounded" alt="{{ product.name }}">
+                </div>
+            </div>
 
-</body>
-</html>
+            <div class="col-lg-7">
+                <h2 class="mb-3">
+                    {{ product.name }}
+                    {% if product.is_on_sale %}
+                    <span class="badge bg-secondary">SALE</span>
+                    {% endif %}
+                </h2>
+                <p class="mb-3">
+                    Category:
+                    <a href="{% url 'category_detail' product.category.id %}">{{ product.category.name }}</a>
+                </p>
+                <h3 class="text-primary mb-4">{{ product.price }} ₾</h3>
+                <p class="mb-4">{{ product.description }}</p>
+
+                <a href="#" class="btn btn-primary border-secondary rounded-pill py-2 px-4 me-2 mb-2">
+                    <i class="fas fa-shopping-cart me-2"></i> Add To Cart
+                </a>
+                <a href="{% url 'product_update' product.id %}" class="btn btn-outline-primary rounded-pill py-2 px-4 me-2 mb-2">
+                    <i class="fas fa-edit me-2"></i> Edit
+                </a>
+                <a href="{% url 'product_delete' product.id %}" class="btn btn-secondary rounded-pill py-2 px-4 me-2 mb-2">
+                    <i class="fas fa-trash me-2"></i> Delete
+                </a>
+                <a href="{% url 'shop' %}" class="btn btn-outline-primary rounded-pill py-2 px-4 mb-2">← Back to Shop</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Delete Product - Electro{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Delete Product</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item active text-white">Delete Product</li>
+    </ol>
+</div>
+
+<div class="container-fluid py-5">
+    <div class="container py-5 text-center">
+        <h3 class="mb-4">Are you sure you want to delete "{{ product.name }}"?</h3>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary rounded-pill py-2 px-4 me-2">Yes, delete</button>
+            <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-primary rounded-pill py-2 px-4">Cancel</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

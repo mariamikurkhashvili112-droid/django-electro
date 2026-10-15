@@ -1,36 +1,37 @@
-<!DOCTYPE html>
-<html lang="ka">
-<head>
-    <meta charset="UTF-8">
-    <title>მთავარი გვერდი</title>
-</head>
-<body>
+{% extends 'store/base.html' %}
 
-    <h1>ყველა პროდუქტი</h1>
-    <p><a href="{% url 'sale' %}">ფასდაკლებული პროდუქტები</a></p>
+{% block title %}Electro - Home{% endblock %}
 
-    <ul>
-        {% for product in products %}
-            <li>
-                <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
-                - {{ product.price }} ₾
-                {% if product.is_on_sale %}
-                    <strong style="color: red;">SALE</strong>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
+{% block content %}
 
-    <h2>კატეგორიები</h2>
-    <ul>
-        {% for category in categories %}
-            <li>
-                <a href="{% url 'category_detail' category.id %}">
-                    {{ category.name }} ({{ category.product_count }})
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+{% include 'store/_page_header.html' with title='Electro Store' %}
 
-</body>
-</html>
+<div class="container-fluid shop py-5">
+    <div class="container py-5">
+
+        <div class="mb-5">
+            <a href="{% url 'sale' %}" class="btn btn-secondary rounded-pill py-2 px-4 me-2 mb-2">
+                <i class="fas fa-percent me-2"></i> Sale Products
+            </a>
+            {% for category in categories %}
+            <a href="{% url 'category_detail' category.id %}" class="btn btn-outline-primary rounded-pill py-2 px-4 me-2 mb-2">
+                {{ category.name }} ({{ category.product_count }})
+            </a>
+            {% endfor %}
+        </div>
+
+        <h4 class="mb-4">All Products</h4>
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-lg-3 col-md-6">
+                {% include 'store/_product_card.html' %}
+            </div>
+            {% empty %}
+            <p>No products have been added yet.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

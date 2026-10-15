@@ -1,28 +1,24 @@
-<!DOCTYPE html>
-<html lang="ka">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ category.name }}</title>
-</head>
-<body>
+{% extends 'store/base.html' %}
 
-    <h1>კატეგორია: {{ category.name }}</h1>
+{% block title %}{{ category.name }} - Electro{% endblock %}
 
-    <ul>
-        {% for product in products %}
-            <li>
-                <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
-                - {{ product.price }} ₾
-                {% if product.is_on_sale %}
-                    <strong style="color: red;">SALE</strong>
-                {% endif %}
-            </li>
-        {% empty %}
-            <li>ამ კატეგორიაში პროდუქტები არ არის.</li>
-        {% endfor %}
-    </ul>
+{% block content %}
 
-    <p><a href="{% url 'home' %}">← უკან მთავარ გვერდზე</a></p>
+{% include 'store/_page_header.html' with title=category.name %}
 
-</body>
-</html>
+<div class="container-fluid shop py-5">
+    <div class="container py-5">
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-lg-3 col-md-6">
+                {% include 'store/_product_card.html' %}
+            </div>
+            {% empty %}
+            <p>There are no products in this category.</p>
+            {% endfor %}
+        </div>
+        <a href="{% url 'shop' %}" class="btn btn-primary rounded-pill py-2 px-4 mt-5">← Back to Shop</a>
+    </div>
+</div>
+
+{% endblock %}
