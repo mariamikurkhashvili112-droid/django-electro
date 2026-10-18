@@ -1,73 +1,82 @@
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views.generic import CreateView, DetailView, ListView
 
 from .forms import ProductForm
 from .models import Category, Product
 
 
-def home(request):
-    # All products ordered by price (ascending)
-    products = Product.objects.order_by("price")
+class HomeView(ListView):
+    model = Product
+    template_name = "store/home.html"
+    context_object_name = "products"
 
-    # Only categories that contain at least one product
-    categories = Category.objects.annotate(
-        product_count=Count("products")
-    ).filter(product_count__gt=0)
+    def get_queryset(self):
+        return Product.objects.order_by("price")
 
-    context = {
-        "products": products,
-        "categories": categories,
-    }
-    return render(request, "store/home.html", context)
-
-
-def shop(request):
-    products = Product.objects.order_by("price")
-    categories = Category.objects.annotate(product_count=Count("products"))
-
-    context = {
-        "products": products,
-        "categories": categories,
-    }
-    return render(request, "store/shop.html", context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Category.objects.annotate(
+            product_count=Count("products")
+        ).filter(product_count__gt=0)
+        return context
 
 
-def category_detail(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
-    products = Product.objects.filter(category=category).order_by("price")
+class ShopView(ListView):
+    model = Product
+    template_name = "store/shop.html"
+    context_object_name = "products"
 
-    context = {
-        "category": category,
-        "products": products,
-    }
-    return render(request, "store/category.html", context)
+    def get_queryset(self):
+        return Product.objects.order_by("price")
 
-
-def sale_products(request):
-    # Only products that are on sale
-    products = Product.objects.filter(is_on_sale=True).order_by("price")
-    return render(request, "store/sale.html", {"products": products})
-
-
-def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    return render(request, "store/product_detail.html", {"product": product})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Category.objects.annotate(
+            product_count=Count("products")
+        )
+        return context
 
 
-def product_create(request):
-    if request.method == "POST":
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            product = form.save()
-            return redirect("product_detail", product_id=product.id)
-    else:
-        form = ProductForm()
+class CategoryDetailView(DetailView):
+    model = Category
+    template_name = "store/category.html"
+    context_object_name = "category"
+    pk_url_kwarg = "category_id"
 
-    context = {
-        "form": form,
-        "title": "Add Product",
-    }
-    return render(request, "store/product_form.html", context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["products"] = Product.objects.filter(
+            category=self.object
+        ).order_by("price")
+        return context
+
+
+class SaleProductsView(ListView):
+    model = Product
+    template_name = "store/sale.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        return Product.objects.filter(is_on_sale=True).order_by("price")
+
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = "store/product_detail.html"
+    context_object_name = "product"
+    pk_url_kwarg = "product_id"
+
+
+class ProductCreateView(CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = "store/product_form.html"
+    extra_context = {"title": "Add Product"}
+
+    def get_success_url(self):
+        return reverse("product_detail", kwargs={"product_id": self.object.id})
 
 
 def product_update(request, product_id):
