@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -30,6 +31,7 @@ class ShopView(ListView):
     model = Product
     template_name = "store/shop.html"
     context_object_name = "products"
+    paginate_by = 6
 
     def get_queryset(self):
         return Product.objects.order_by("price")
@@ -50,9 +52,12 @@ class CategoryDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["products"] = Product.objects.filter(
-            category=self.object
-        ).order_by("price")
+        products = Product.objects.filter(category=self.object).order_by("price")
+        paginator = Paginator(products, 4)
+        page_obj = paginator.get_page(self.request.GET.get("page"))
+        context["products"] = page_obj
+        context["page_obj"] = page_obj
+        context["is_paginated"] = page_obj.has_other_pages()
         return context
 
 
@@ -60,6 +65,7 @@ class SaleProductsView(ListView):
     model = Product
     template_name = "store/sale.html"
     context_object_name = "products"
+    paginate_by = 4
 
     def get_queryset(self):
         return Product.objects.filter(is_on_sale=True).order_by("price")
